@@ -1,0 +1,71 @@
+\documentclass{article}
+
+% Macros to make this problem look like the rest of our problems.
+\usepackage{icpc_problem}
+
+% Title of your problem.
+\title{F: Stack It Up}
+
+% Who made the problem
+\author{Aaron Peddle}
+
+% Keywords, from a set of standard keywords.
+\keywords{problem}
+
+% Anything you want to say about the problem, including how one could solve it
+\comments{comment}
+
+% Difficulty on a 1..10 scale.
+\difficulty{1}
+
+\begin{document}
+
+% Plain English description of the problem
+\begin{problemDescription}
+You're working at your part time job - box tower building. As we know box towers are extremely popular with the kids - basically the new fidget spinners. Your job consists of standing by a conveyor belt which brings you perfectly cubed boxes of various sizes and building the tallest possible box stack you can during your shift.
+
+Unfortunately there isn't any order to the size of the boxes and as we all know box towers are built by stacking smaller boxes on top of larger boxes. To make matters worse, due to safety regulations any box you take from the conveyor belt has to be placed directly on top of your current stack and can't be stored for later. You also cannot remove boxes from the stack once placed.
+
+Luckily each day when you go to work you receive a list indicating the size of all the boxes and the order thay the will arrive in on the conveyor belt during your shift. Using your skills as a computer scientist you want to ensure you are building the tallest stack of boxes.
+
+\end{problemDescription}
+
+% Specific input definition
+% Includes what is being taken as input, and in what format
+\begin{inputDescription}
+Each case will begin with a positive integer $1 \leq N \leq 1000$  indicating the number of boxes that will be on the conveyor belt during your shift.
+
+The following $N$ lines each contain an integer $1 \leq D \leq 100$ representing the dimensions of one box ordered by occurence.
+
+Any occurrence of $0$ indicates that there are no more cases to be executed.
+
+\end{inputDescription}
+
+% Specific output definition
+% Includes what should be printed, and in what format
+\begin{outputDescription}
+For each case, output the height of the tallest box tower you can build. Each case should be output on its own line.
+
+\end{outputDescription}
+
+\begin{sampleInput}
+
+1
+2
+2
+3
+2
+3
+4
+1
+2
+0
+\end{sampleInput}
+\begin{sampleOutput}
+
+2
+5
+6
+\end{sampleOutput}
+
+\end{document}

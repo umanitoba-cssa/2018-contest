@@ -1,0 +1,367 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% vim:tw=0 nowrap:
+%
+% icpc_problem.sty
+%
+% Author: Greg Hamerly (hamerly@cs.baylor.edu)
+%
+% Date: 2008/10/15
+%
+% Description: This is a LaTeX package for making ICPC-style problems. There is
+% a very regular format to these problems, which this package assumes.
+% Therefore, it's not that flexible, but it makes the simple task of writing a
+% problem much easier.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Basic usage:
+%        \documentclass{article}
+% 
+%        \usepackage{../../latex/icpc_problem} % or wherever this package is stored
+% 
+%        \title{title of the problem here}
+%        \author{your name here}
+%        \keywords{list of lower-case keywords separated by spaces}
+%        \comments{Any comments can go in here, so long as they can be fed as
+%        an argument to a LaTeX command.
+%        }
+%        \difficulty{2} % the difficulty should be a non-negative integer
+% 
+%        \begin{document}
+% 
+%        \begin{problemDescription}
+%        The basic problem description goes here.
+%        \end{problemDescription}
+% 
+%        \begin{inputDescription}
+%        A description of the input format goes here.
+%        \end{inputDescription}
+% 
+%        \begin{outputDescription}
+%        A description of the output format goes here.
+%        \end{outputDescription}
+% 
+%        \begin{sampleInput}
+%        The sample input can be anything (except \end{SaveVerbatim}, which
+%        would cause a LaTeX parsing error). Treat this like the standard
+%        verbatim environment.
+%        \end{sampleInput}
+%        \begin{sampleOutput}
+%        The sample output environment is similar to sample input; treat it
+%        like a verbatim environment.
+%        \end{sampleOutput}
+% 
+%        \end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% Note that the sampleInput and sampleOutput environments should not have a
+% paragraph break between them; they should float to the right positions to
+% minimize space. It's okay to have a break between them if you want to force
+% them to be in separate paragraphs, but otherwise keeping them in the same
+% paragraph should do the "right" thing.
+%
+% There are several options available for this package:
+%   - displaymeta: Put into the layout a table describing the meta tags.
+%
+%   - showspaces: Display spaces in the Verbatim environments (note: this only
+%     works with FancyVerbatim environments, not regular verbatim).
+%
+%   - warnonly: Normally, this package will validate the presence of all meta
+%     tags, and produce an error (which prevents compilation) if validation
+%     fails. If this option is present, the errors will be reduced to warnings.
+%
+% Tips:
+%   - If you use \begin{Verbatim} instead of \begin{verbatim} in a problem
+%     description, your description will inherit the property of the showspaces
+%     option.
+%   - The sampleInput and sampleOutput environments are kinda touchy. They're
+%     certainly complicated enough.
+%   - Without changing the LaTeX source, you can enable options for a package
+%     from the command line like this:
+%       $ latex '\PassOptionsToPackage{displaymeta}{icpc_problem}\input{statement.tex}'
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{icpc_problem}[2008/10/15 hamerly@cs.baylor.edu]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ifthen is required to set up the package options, so require it here
+\RequirePackage{ifthen}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PACKAGE OPTIONS -- can be passed when \usepackage is called, or by
+% \PassOptionsToPackage prior to \usepackage
+%
+
+% this option will make the document display the meta tags in a table
+\newboolean{displayMetaTags}
+\setboolean{displayMetaTags}{false}
+\DeclareOption{displaymeta}{
+    \PackageInfo{icpc_problem}{Displaying meta tags in the document}
+    \setboolean{displayMetaTags}{true}
+}
+
+% this option turns on spaces in the FancyVerbatim environments (e.g. sample
+% input/output)
+\newboolean{showSampleSpaces}
+\setboolean{showSampleSpaces}{false}
+\DeclareOption{showspaces}{
+    \PackageInfo{icpc_problem}{Showing spaces in sample input/output}
+    \setboolean{showSampleSpaces}{true}
+}
+
+% this option turns errors from this package into warnings only
+\newboolean{warnOnly}
+\setboolean{warnOnly}{false}
+\DeclareOption{warnonly}{
+    \PackageInfo{icpc_problem}{Turning off package errors; using package warnings only}
+    \setboolean{warnOnly}{true}
+}
+
+% process the options...
+\ProcessOptions\relax
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% OTHER COMMONLY NEEDED PACKAGES
+\RequirePackage{epsf}
+\RequirePackage{plain}
+\RequirePackage{fullpage}
+\RequirePackage{graphicx}
+\RequirePackage{fancyvrb}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% when the document begins, check the meta tags
+\AtBeginDocument{\doMetaTagCheck}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% formatting
+\setlength{\parindent}{0in} % don't indent paragraphs
+\setlength{\parskip}{0.1in} % skip a bit between paragraphs
+\pagestyle{empty}           % don't number pages
+% FIXME -- is there a way to avoid numbering if there is only one page, and otherwise use page numbers?
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \header is used generally to highlight the beginning of each part of the
+% document. We avoid using \section because we have more control over the
+% spacing.
+\newcommand{\header}[1]{\medskip{\Large\bf#1}\par}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% META TAG STUFF
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% These are the values of the meta-tags used to document the problems.
+\newcommand{\@comments}{}
+\newcommand{\@difficulty}{}
+\newcommand{\@keywords}{}
+% \@author is standard LaTeX stuff, so it's already defined. However, its
+% default definition seems strange -- I can't use it (or test its value)
+% without getting errors about \@gobble. Therefore, we redefine it to be empty.
+\renewcommand{\@author}{}
+
+% These commands, with \author, are used to set up the meta tag values. They
+% should all be called before \begin{document}
+\newcommand{\comments}[1]{\renewcommand{\@comments}{#1}}
+\newcommand{\difficulty}[1]{\renewcommand{\@difficulty}{#1}}
+\newcommand{\keywords}[1]{\renewcommand{\@keywords}{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Change \maketitle so that it shows only the title, not the author/date.
+\renewcommand{\maketitle}{\begin{center}\header{\@title}\end{center}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Register an error or a warning for the package, depending on the value of the
+% warnOnly boolean.
+
+\newcommand{\PackageProblem}[2]{
+    \ifthenelse{\boolean{warnOnly}}{
+        \PackageWarning{icpc_problem}{#1}
+    }{
+        \PackageError{icpc_problem}{#1}{#2}
+    }
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% These commands check to see if author, comments, difficulty, and keywords have
+% been defined, and display errors if they are not defined. They can be turned
+% off by using \def\dontCheckMetaTags{true} within the document.
+
+\newcommand{\checkMetaTag}[1]{
+    % enclose the check in a new local environment so that the \metaTagMacro is
+    % not globalized and can be defined each time this command is called
+    {
+        % Assume that \@#1 is the value to check. Construct a macro that has
+        % that same value, for ease of multiple tests:
+        \newcommand{\metaTagMacro}{\csname @#1\endcsname}
+
+        \ifthenelse{\isundefined{\metaTagMacro}}
+        {
+            % this shouldn't happen, since we initialized the meta tags above
+            \PackageProblem{META TAG UNDEFINED: #1}{Please define `#1' before begin{document}}
+        }
+        {
+            \ifthenelse{\equal{\metaTagMacro}{}}{
+                \PackageProblem{META TAG EMPTY: #1}{Please define `#1' before begin{document}}
+            }
+            {
+                % do nothing; the meta tag is defined and not empty
+            }
+        }
+    }
+}
+
+% shortcut for performing a check on all the meta tags we care about
+\newcommand{\doMetaTagCheck}{
+    \checkMetaTag{author}
+    % TODO: would be nice to validate keywords on the fly
+    \checkMetaTag{keywords}
+    \checkMetaTag{comments}
+    \checkMetaTag{difficulty}
+    \ifthenelse{\(\equal{\@difficulty}{}\) \OR \( \(\@difficulty < 1\) \AND \(\NOT \equal{\@difficulty}{0}\)\)}{
+        \PackageProblem{INVALID DIFFICULTY: `\@difficulty'}{Please use integer difficulties >= 0}
+    }{}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% These commands control whether the document will show the meta tags.  Passing
+% the option [displaymeta] will cause this to be enabled.
+\newcommand{\doMetaTagDisplay}{
+    % if \displayMetaTags is not defined, do nothing...
+    \ifthenelse{\boolean{displayMetaTags}}{
+        \begin{center}
+            % put a fancy side-lined marker indicating meta tags
+            \raisebox{-0.3in}{ \rotatebox{90}{\Large \bf \textsf{META}} }
+            \newlength{\metaTagRightColumnWidth}
+            \setlength{\metaTagRightColumnWidth}{0.7\textwidth}
+            \begin{tabular}{|r|p{\metaTagRightColumnWidth}|}
+                \hline Author:     & \@author \\
+                \hline Keywords:   & \@keywords \\
+                \hline Difficulty: & \@difficulty \\
+                \hline Comments:   & \begin{minipage}[t]{\metaTagRightColumnWidth}
+                                     {
+                                        \small
+                                        \setlength{\parskip}{0.1in}
+                                        \@comments
+                                     }
+                                     \end{minipage}\par
+                                     \\
+                \hline
+            \end{tabular}
+        \end{center}
+    }{}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% problemDescription is the environment for describing the problem; nothing
+% special.
+\newenvironment{problemDescription}{
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % put in the title, automatically...
+    \maketitle
+    % display problem meta tags, if enabled
+    \doMetaTagDisplay
+}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% inputDescription is for describing the format of the input
+\newenvironment{inputDescription}{\header{Input}}{\par}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% outputDescription is for describing the format of the output
+\newenvironment{outputDescription}{\header{Output}}{\par}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% these are the FancyVerbatim environment settings used
+
+\ifthenelse{\boolean{showSampleSpaces}}{\fvset{fontsize=\small,showspaces=true}}
+                                       {\fvset{fontsize=\small}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% the sampleInput environment allows us to wrap any text and have it be
+%% represented just like in a verbatim environment, but with a title... and
+%% automatically-sized width.
+%%
+%% For more information about embedding Verbatim inside another environment, see
+%% http://newsgroups.derkeiler.com/Archive/Comp/comp.text.tex/2006-06/msg01041.html
+%% The key seems to be calling \VerbatimEnvironment within the environment.
+%% However, I don't really know what that does.
+
+\newenvironment{sampleInput}{\VerbatimEnvironment\begin{SaveVerbatim}{sampleInputSavedVerbatim}}
+{\end{SaveVerbatim}
+% create some boxes, but don't display them
+\newsavebox{\sampleInputVerbatimBox}
+\newsavebox{\sampleInputHeaderBox}
+\sbox{\sampleInputVerbatimBox}{\BUseVerbatim{sampleInputSavedVerbatim}}
+\sbox{\sampleInputHeaderBox}{\header{Sample Input}}
+% find the widths of the boxes
+\newlength{\sampleInputVerbatimWidth}
+\newlength{\sampleInputHeaderWidth}
+\settowidth{\sampleInputVerbatimWidth}{\usebox{\sampleInputVerbatimBox}}
+\settowidth{\sampleInputHeaderWidth}{\usebox{\sampleInputHeaderBox}}
+% find the maximum width between the two boxes
+\newlength{\sampleInputWidth}
+\ifthenelse{\lengthtest{\sampleInputVerbatimWidth < \sampleInputHeaderWidth}}
+    {\setlength{\sampleInputWidth}{\sampleInputHeaderWidth}}
+    {\setlength{\sampleInputWidth}{\sampleInputVerbatimWidth}}
+% create the output, with appropriate boxes and widths
+\begin{minipage}[t]{\sampleInputWidth}
+    \vspace{\parskip}
+    \usebox{\sampleInputHeaderBox}\\
+    \rule[2pt]{\sampleInputWidth}{0.3pt}
+    \usebox{\sampleInputVerbatimBox}
+    \rule[5pt]{\sampleInputWidth}{0.3pt}
+    \vspace{\parskip} % create a little vertical space in case the output is below the input
+\end{minipage}
+\hfill % if sample input/output are side-by-side, push the output to the right as far as possible
+\hspace{0.1in} % put a little space between the sample input and output if they are side-by-side
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% the sampleOutput environment is similar to the sampleInput environment, but
+%% with a different title, and no \hfill at the end
+
+% we use a minipage environment with width 0 to wrap around the SaveVerbatim.
+% Otherwise, if we don't wrap it like this, the SaveVerbatim creates a new
+% paragraph, which we don't want. This is very hackish. Also, even though the
+% minipage has 0 width, it still introduces some space (about 0.5in) which we
+% must later remove.
+\newenvironment{sampleOutput}{\VerbatimEnvironment\begin{minipage}{0in}\begin{SaveVerbatim}{sampleOutputSavedVerbatim}}
+{\end{SaveVerbatim}\end{minipage}
+% create some boxes, but don't display them
+\newsavebox{\sampleOutputVerbatimBox}
+\newsavebox{\sampleOutputHeaderBox}
+\sbox{\sampleOutputVerbatimBox}{\BUseVerbatim{sampleOutputSavedVerbatim}}
+\sbox{\sampleOutputHeaderBox}{\header{Sample Output}}
+% find the widths of the boxes
+\newlength{\sampleOutputVerbatimWidth}
+\newlength{\sampleOutputHeaderWidth}
+\newlength{\sampleOutputWidth}
+\settowidth{\sampleOutputVerbatimWidth}{\usebox{\sampleOutputVerbatimBox}}
+\settowidth{\sampleOutputHeaderWidth}{\usebox{\sampleOutputHeaderBox}}
+% find the maximum width between the two boxes
+\ifthenelse{\lengthtest{\sampleOutputVerbatimWidth < \sampleOutputHeaderWidth}}
+    {\setlength{\sampleOutputWidth}{\sampleOutputHeaderWidth}}
+    {\setlength{\sampleOutputWidth}{\sampleOutputVerbatimWidth}}
+% create the output, with appropriate boxes and widths
+\hspace{-0.5in} % the minipage kludge above introduces about 0.5in space, so we remove it here
+\begin{minipage}[t]{\sampleOutputWidth}
+    \vspace{\parskip}
+    \usebox{\sampleOutputHeaderBox}\\
+    \rule[2pt]{\sampleOutputWidth}{0.3pt}
+    \usebox{\sampleOutputVerbatimBox}
+    \rule[5pt]{\sampleOutputWidth}{0.3pt}
+\end{minipage}
+% paragraph ends here; don't continue this line
+\par
+}
+

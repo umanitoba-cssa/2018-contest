@@ -1,0 +1,75 @@
+\documentclass{article}
+
+% Macros to make this problem look like the rest of our problems.
+\usepackage{icpc_problem}
+
+% Title of your problem.
+\title{D: The Adventures of Jumping Janice}
+
+% Who made the problem
+\author{Sean Egan}
+
+% Keywords, from a set of standard keywords.
+\keywords{problem}
+
+% Anything you want to say about the problem, including how one could solve it
+\comments{comment}
+
+% Difficulty on a 1..10 scale.
+\difficulty{1}
+
+\begin{document}
+
+% Plain English description of the problem
+\begin{problemDescription}
+Jumping Janice has the incredibly useful super power of being able to jump massive distances ahead on sidewalks. She enjoys waking up to do a morning exercise where she goes to the longest sidewalk in her home town to do a series of jump circuits. The sidewalk is always a great enough length for her entire exercise, and is composed of a series of $1m^2$ concrete tiles.
+
+Each circuit consists of her starting at some tile on the sidewalk, where she then jumps along the sidewalk skipping some number of tiles forward or backward with each jump.
+
+Every tile in the sidewalk has a tile number relative to the circuit's start position. The starting tile will always be tile 0, the next one forward is tile 1, then tile 2, and so on. Take note that Janice can also jump backward, which means it is possible for her to land on tile -10, for example.
+
+Janice has become curious about which tile she most frequently jumps to within each circuit, and wants a way to determine which tile that is.
+
+At the start of the circuit, the starting tile has a single visit because she is standing on it. After that, every jump in the circuit will cause some other tile to be visited.
+
+\end{problemDescription}
+
+% Specific input definition
+% Includes what is being taken as input, and in what format
+\begin{inputDescription}
+Each circuit will start with a line of input containing only an integer, $0 \leq n \leq 100$, representing the number of jumps in the circuit. 
+
+The following line contains $n$ space separated integers $ -2^{31} \leq k_1, k_2, \dots, k_n \leq 2^{31} - 1 $, where $k_i$ represents the distance of the $i$th jump in a given circuit, and $k_i \neq 0$.
+
+When you reach a circuit that has $ n = 0 $ jumps, then there are no more cases, and your program should exit.
+
+\end{inputDescription}
+
+% Specific output definition
+% Includes what should be printed, and in what format
+\begin{outputDescription}
+For each circuit, you should print a line of the form "Circuit \#X: Y". $X$ will be the case number, starting from 1, and increasing by one every case. $Y$ will be the tile number of the most frequently visited tile.
+
+If there are multiple tiles that have the highest frequency, you should only output the tile with the lowest tile number.
+
+\end{outputDescription}
+
+\begin{sampleInput}
+
+4
+-5 -10 5 5
+2
+10 5
+0
+\end{sampleInput}
+\begin{sampleOutput}
+
+Circuit #1: -5
+Circuit #2: 0
+\end{sampleOutput}
+
+% In the first case, Janice visits tile 0, tile -5, tile -15, tile -10, then tile -5 once again. The most frequently visited tile is clearly tile -5.
+
+% In the second case, Janice visits tile 0, tile 10, then tile 15. Since the most visited tiles were visited once, we output the lowest tile number with a frequency of one, which is tile 0.
+
+\end{document}

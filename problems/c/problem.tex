@@ -1,0 +1,69 @@
+\documentclass{article}
+
+% Macros to make this problem look like the rest of our problems.
+\usepackage{icpc_problem}
+
+% Title of your problem.
+\title{C: Oar Factory}
+
+% Who made the problem
+\author{Sean Egan}
+
+% Keywords, from a set of standard keywords.
+\keywords{problem}
+
+% Anything you want to say about the problem, including how one could solve it
+\comments{comment}
+
+% Difficulty on a 1..10 scale.
+\difficulty{1}
+
+\begin{document}
+
+% Plain English description of the problem
+\begin{problemDescription}
+You're an expert oar-maker working in a high quality oar factory. The factory is sometimes referred to as "The LabOARatOARy" by other oar-makers, and by people who make bad jokes. The oar factory manufactures oars with a specific laminate that cannot be found at any other factory. That being said, the oars from this factory are exclusive oars.
+
+The laminate being applied in this factory is what separates their oars from their competitors. There is a large conveyor belt in the factory that carries oars from the storage area where partially laminated oars are kept, to the laminating section of the factory where the final layer of laminate can be applied. Due to the nature of the oar manufacturing process, and general shape of oars, an oar can be resting in one of two ways. Either the side that needs laminating is facing up, or it is facing down. It's really quite beautiful.
+
+When oars are loaded onto the conveyor belt from storage, there isn't any guarantee about whether the laminated side will be facing up or down when it rests on the belt. All of the oars on the conveyor belt are equally distanced from each other so that they can be easily flipped by the arms from the machines overhead. Additionally, the conveyor belt is configured to move left and right within your control. The only constraint being that there must always be an oar resting underneath each arm of the machine, for safety reasons.
+
+Your job as an oar-maker who had their job automated by the overhead machines, is to find a way to flip the oars such that all of them have their laminate facing down in preparation for the next lamination. This won't always be possible to achieve without human intervention, which is why our mechanical overlords have allowed you to keep your job.
+
+The reason it won't always be possible to make all of the oars face laminate-side down is that the arms of the machine cannot act independently of each other. If you choose to make the machine flip the oars, it will flip every oar that is currently resting underneath one of the machine arms.
+
+\end{problemDescription}
+
+% Specific input definition
+% Includes what is being taken as input, and in what format
+\begin{inputDescription}
+The first line contains only an integer $0 \leq n \leq 10000$, representing the number of oar configurations to be tested. The following $n$ lines contain two space separated binary strings, $V$ and $K$.
+
+The string $V$ is a vector representing the configuration of the oars on the conveyor belt, where a $0$ represents an oar with its laminate facing down, and a $1$ represents an oar with its laminate facing up. The length of $V$ is in the range $1 \leq \left\vert{V}\right\vert \leq 64$.
+
+The string $K$ is a vector representing where the overhead flippers are aligned, where a $1$ represents one of the arms that can flip the oar below it, and a $0$ represents a gap between the flipping arms (the oar below it will NOT be flipped). $K$ will always start and end with a 1, and the length of $K$ is in the range $1 \leq \left\vert{K}\right\vert < \left\vert{V}\right\vert$.
+
+\end{inputDescription}
+
+% Specific output definition
+% Includes what should be printed, and in what format
+\begin{outputDescription}
+For each case, output "YUP" if it is possible to zero the vector, or "NO CAN DO" if it is impossible. Each case should be output on its own line.
+
+\end{outputDescription}
+
+\begin{sampleInput}
+
+3
+1000101011 1
+10001010001 1000001
+111001100000000 11
+\end{sampleInput}
+\begin{sampleOutput}
+
+YUP
+YUP
+NO CAN DO
+\end{sampleOutput}
+
+\end{document}

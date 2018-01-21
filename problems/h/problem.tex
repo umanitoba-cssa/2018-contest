@@ -1,0 +1,57 @@
+\documentclass{article}
+
+% Macros to make this problem look like the rest of our problems.
+\usepackage{icpc_problem}
+
+% Title of your problem.
+\title{H: Mean Girls}
+
+% Who made the problem
+\author{Deepankar Choudhery}
+
+% Keywords, from a set of standard keywords.
+\keywords{problem}
+
+% Anything you want to say about the problem, including how one could solve it
+\comments{comment}
+
+% Difficulty on a 1..10 scale.
+\difficulty{1}
+
+\begin{document}
+
+% Plain English description of the problem
+\begin{problemDescription}
+The girls are back because Hollywood producers are running out of ideas and it is about time they reboot this franchise. Cady, Regina, Gretchen and Karen started cheer leading this year and are very good at it. They have been practicing two formations that they have to get perfectly at nationals.
+
+In the first formation they are positioned  in such a way that they form a square. In the second formation they are positioned in such a way that they form a rectangle.
+
+Given all the girls’ positions, you must output whether they are constructing a square, rectangle, or neither. 
+\end{problemDescription}
+
+% Specific input definition
+% Includes what is being taken as input, and in what format
+\begin{inputDescription}
+The first line contains an integer $0 \leq n \leq 1000$, representing the number of position sets to be tested. The following n lines contains 8 integers separated by spaces, $-10000 \leq x1, y1, x2, y2, x3, y3, x4, y4 \leq 10000$. Each $(x_i, y_i)$ pair represents the position of the cheerleaders in the formation.
+\end{inputDescription}
+
+% Specific output definition
+% Includes what should be printed, and in what format
+\begin{outputDescription}
+If their positions can form a square, then you must output "SQUARE". Otherwise, if the positions can form a rectangle, then you must output "RECTANGLE". In all other cases, you must output "NEITHER".
+
+\end{outputDescription}
+
+\begin{sampleInput}
+3
+-2 0 0 2 2 0 0 -2
+-3 0 0 2 3 0 0 -2
+1 1 2 3 1 2 3 10
+\end{sampleInput}
+\begin{sampleOutput}
+SQUARE
+NEITHER
+NEITHER
+\end{sampleOutput}
+
+\end{document}
